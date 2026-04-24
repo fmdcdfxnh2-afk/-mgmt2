@@ -689,7 +689,14 @@ async function deleteModal(){
 }
 
 // 起動時にDBからデータを読み込む
-loadFromDB().then(()=>render());
+async function saveModalDB(type,data,isNew){
+  if(type==='customer'){const d={name:data.name,phone:data.phone,visits:data.visits,last_visit:data.lastVisit,total_spent:data.totalSpent,used_casts:data.usedCasts,ng_casts:data.ngCasts,ng_notes:data.ngNotes,memo:data.memo,rank:data.rank};if(isNew){const r=await dbInsert('customers',d);if(r&&r[0])data.id=r[0].id;}else await dbUpdate('customers',data.id,d);try{await fetch(GAS_URL,{method:'POST',body:JSON.stringify({type:'customer',...data})});}catch{}}
+  if(type==='booking'){const d={customer_name:data.customerName,cast_name:data.castName,start_time:data.startTime,duration:data.duration,status:data.status,address:data.address,amount:data.amount,date:data.date,cut_rate:data.cutRate};if(isNew){const r=await dbInsert('bookings',d);if(r&&r[0])data.id=r[0].id;}else await dbUpdate('bookings',data.id,d);try{await fetch(GAS_URL,{method:'POST',body:JSON.stringify({type:'booking',...data})});}catch{}}
+  if(type==='cast'){const d={name:data.name,status:data.status,start_time:data.startTime,end_time:data.endTime,phone:data.phone,note:data.note,cut_rate:data.cutRate};if(isNew){const r=await dbInsert('casts',d);if(r&&r[0])data.id=r[0].id;}else await dbUpdate('casts',data.id,d);}
+  if(type==='user'){const d={username:data.username,password:data.password,display_name:data.displayName,role:data.role};if(isNew){const r=await dbInsert('users',d);if(r&&r[0])data.id=r[0].id;}else await dbUpdate('users',data.id,d);}
+}
+
+  loadFromDB().then(()=>render());
 </script>
 </body>
 </html>
